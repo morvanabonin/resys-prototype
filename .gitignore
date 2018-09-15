@@ -1,1 +1,4 @@
 parecer-testes-proj-resys.txt
+__pycache__/
+logs/
+logzero/

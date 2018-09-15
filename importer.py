@@ -1,13 +1,16 @@
-# Importer movielens dataset for Neo4J database
-
-# from neo4j import GraphDatabase
+'''
+    Importer movielens dataset for Neo4J database
+'''
 from neo4j.v1 import GraphDatabase
+from logger import *
+import sys
 
-# driver = GraphDatabase.driver("bolt://172.20.0.2:7687", auth=("neo4j", "neo4j"), encrypted=false)
-driver = GraphDatabase.driver("bolt://172.19.0.2:7687", auth=("neo4j", "201125"))
-print(driver)
-# db = GraphDatabase("http://localhost:7474", username="neo4j", password="neo4j")
-# print_r(db)
+# conexão com o banco de grafos neo4j
+try:
+    driver = GraphDatabase.driver("bolt://172.20.0.2:7687", auth=("neo4j", "201125"))
 
-# db = GraphDatabase("bolt://172.20.0.2:7687", username="neo4j", password="neo4j")
-# print_r(db)
+    logger.info("Conexão efetuada com sucesso!")
+except Exception as e:
+    logger.error("Houve erro ao efetuar a conexão com o banco. Erro: {0}".format(e))
+
+
