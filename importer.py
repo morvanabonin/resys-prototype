@@ -3,6 +3,7 @@
 '''
 from neo4j.v1 import GraphDatabase
 from logger import *
+import csv
 import sys
 
 # conexão com o banco de grafos neo4j
@@ -13,4 +14,12 @@ try:
 except Exception as e:
     logger.error("Houve erro ao efetuar a conexão com o banco. Erro: {0}".format(e))
 
+#leitura do csv
+try:
+    with open('ml-latest/movies.csv', 'r+') as csvmovies:
+        movies = csv.reader(csvmovies, delimiter=',', quotechar='|')
+        for movie in movies:
+            print(movie)
+except Exception as e:
+    logger.error("Houve erro ao ler o arquivo de CSV. Erro: {0}".format(e))
 
