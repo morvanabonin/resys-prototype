@@ -19,7 +19,7 @@ try:
     with open('ml-latest/movies.csv', 'r+') as csvmovies:
         movies = csv.reader(csvmovies, delimiter=',', quotechar='|')
         for movie in movies:
-            print(movie)
+            print(movie[0])
 except Exception as e:
     logger.error("Houve erro ao ler o arquivo de CSV. Erro: {0}".format(e))
 
