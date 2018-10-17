@@ -1,14 +1,16 @@
 '''
     Importer movielens dataset for Neo4J database
 '''
-from neo4j.v1 import GraphDatabase
-from logger import *
 import csv
 import sys
 
+from neo4j.v1 import GraphDatabase
+from logger import *
+
+
 # conexão com o banco de grafos neo4j
 try:
-    driver = GraphDatabase.driver("bolt://172.20.0.2:7687", auth=("neo4j", "201125"))
+    driver = GraphDatabase.driver("bolt://172.18.0.2:7687", auth=("neo4j", "201125"))
 
     logger.info("Conexão efetuada com sucesso!")
 except Exception as e:
@@ -49,10 +51,13 @@ try:
 
                 if(indexMovie == movieId and indexUser == userId):
                     name = nameUser +' '+surname
-                    relation = [name, nameMovie, genres, rating]
+                    # movieGenres = genres.split('|')
+                    movieGenres = getDictGenres(genres)
+                    relation = [name, nameMovie, movieGenres, rating]
                     with open('ml-latest/relations.csv', 'a', newline='', encoding='utf-8') as writeFile:
                         writer = csv.writer(writeFile)
-                        writer.writerow(relation)
+                        print(relation)
+                        #writer.writerow(relation)
                     writeFile.close()
     movieFile.close()
     usersFile.close()
@@ -60,6 +65,9 @@ try:
     
 except Exception as e:
     logger.error("Houve erro ao ler o arquivo de CSV. Erro: {0}".format(e))
+
+def getDictGenres(genres):
+    return genres.split('|')
 
 def testeCreate():
     # abrindo uma sessão no Neo4J
