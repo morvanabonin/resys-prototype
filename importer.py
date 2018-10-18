@@ -43,14 +43,15 @@ try:
         ratings = list(reader)
 
     # for index, movie in enumerate(movies):
+
     for movie in movies:
         indexMovie = movie[0]
         nameMovie = movie[1]
         genres = movie[2]
         for user in users:
             indexUser = user[0]
-            nameUser = user[1]
-            surname = user[2]
+            firstName = user[1]
+            lastName = user[2]
             for rating in ratings:
                 userId = rating[0]
                 movieId = rating[1]
@@ -58,33 +59,33 @@ try:
 
                 if(indexMovie == movieId and indexUser == userId):
                     # cria apenas um unico nome
-                    name = nameUser +' '+surname
+                    name = firstName +' '+ lastName
                     movieGenres = genres.split('|')
 
                     # gambi para dar slip no nome do filme e ano tirando os parenteses
                     movie = nameMovie.replace(")", " ").split('(')
                     title = movie[0]
                     titleGlued = title.replace(" ", "")
-                    print(titleGlued)
                     year = movie[1]
 
-                    relation = [nameUser, surname, title, year, movieGenres, rating]
+                    relation = [firstName, lastName, title, year, movieGenres, rating]
                     with open('ml-latest/relations.csv', 'a', newline='', encoding='utf-8') as writeFile:
                         writer = csv.writer(writeFile)
                         #print(relation)
                         # abrindo uma sessão no Neo4J
-                        dbg = driver.session()
+                        # dbg = driver.session()
 
-                        # Criação e select para inserção e retorno de dados
-                        ret = dbg.run("CREATE (firstName:Person {name:'name'})-[w:WATCH]->(nomeFilmeGrudado:Movie {name:'title', released:year})-[g:GENRE]->{tag:Genre {tag: genre})->[r:RATE]->{number:Rating {number: rating}}} RETURN Person, Movie, w)
-                        # ret = dbg.run("CREATE (database:Database {name:'Neo4j'})-[r:SAYS]->(message:Message {name:'Hello World!'}) RETURN database, message, r")
-
-                        # fechando sessão
-                        # dbg = driver.close()
-                        
+                        # # Criação e select para inserção e retorno de dados
+                        # ret = dbg.run("CREATE (" + firstName + ":Person {name:'" + name + "'})-[w:WATCH]->" +
+                        # "(" + titleGlued + ":Movie {title:'" + title +"', released:" + year +"});")
+                        # print(ret)
+                                                
                         # escrita em arquivo
-                        # writer.writerow(relation)
+                        writer.writerow(relation)
                     writeFile.close()
+    # fechando sessão
+    dbg = driver.close()
+
     movieFile.close()
     usersFile.close()
     ratingsFile.close()  
