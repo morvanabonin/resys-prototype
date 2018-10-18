@@ -3,6 +3,7 @@
 '''
 import csv
 import sys
+import re
 
 from neo4j.v1 import GraphDatabase
 from logger import *
@@ -24,14 +25,20 @@ try:
     #     for movie in movies:
 
     with open('ml-latest/movies.csv', 'r') as movieFile:
+        # retira a 1ª linha do arquivo (header)
+        next(movieFile)
         reader = csv.reader(movieFile)
         movies = list(reader)
 
     with open('ml-latest/users.csv', 'r') as usersFile:
+        # retira a 1ª linha do arquivo (header)
+        next(usersFile)
         reader = csv.reader(usersFile)
         users = list(reader)
 
     with open('ml-latest/ratings.csv', 'r') as ratingsFile:
+        # retira a 1ª linha do arquivo (header)
+        next(ratingsFile)
         reader = csv.reader(ratingsFile)
         ratings = list(reader)
 
@@ -50,14 +57,33 @@ try:
                 rating = rating[2]
 
                 if(indexMovie == movieId and indexUser == userId):
+                    # cria apenas um unico nome
                     name = nameUser +' '+surname
-                    # movieGenres = genres.split('|')
-                    movieGenres = getDictGenres(genres)
-                    relation = [name, nameMovie, movieGenres, rating]
+                    movieGenres = genres.split('|')
+
+                    # gambi para dar slip no nome do filme e ano tirando os parenteses
+                    movie = nameMovie.replace(")", " ").split('(')
+                    title = movie[0]
+                    titleGlued = title.replace(" ", "")
+                    print(titleGlued)
+                    year = movie[1]
+
+                    relation = [nameUser, surname, title, year, movieGenres, rating]
                     with open('ml-latest/relations.csv', 'a', newline='', encoding='utf-8') as writeFile:
                         writer = csv.writer(writeFile)
-                        print(relation)
-                        #writer.writerow(relation)
+                        #print(relation)
+                        # abrindo uma sessão no Neo4J
+                        dbg = driver.session()
+
+                        # Criação e select para inserção e retorno de dados
+                        ret = dbg.run("CREATE (firstName:Person {name:'name'})-[w:WATCH]->(nomeFilmeGrudado:Movie {name:'title', released:year})-[g:GENRE]->{tag:Genre {tag: genre})->[r:RATE]->{number:Rating {number: rating}}} RETURN Person, Movie, w)
+                        # ret = dbg.run("CREATE (database:Database {name:'Neo4j'})-[r:SAYS]->(message:Message {name:'Hello World!'}) RETURN database, message, r")
+
+                        # fechando sessão
+                        # dbg = driver.close()
+                        
+                        # escrita em arquivo
+                        # writer.writerow(relation)
                     writeFile.close()
     movieFile.close()
     usersFile.close()
